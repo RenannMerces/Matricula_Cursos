@@ -3,7 +3,6 @@
 
     <router-link id="logo-url" to="/">
       <img id="logo" :src="logo" :alt="alt">
-      <span class="logo-text">Cursos Online</span>
     </router-link>
 
     <div class="links">

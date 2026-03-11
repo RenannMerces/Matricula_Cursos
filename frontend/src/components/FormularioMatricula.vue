@@ -1,55 +1,38 @@
 <template>
-<section class="page">
-     <div class="form-container">
+  <section class="page">
+      <div class="form-container">
 
-    <h1>Matrícula em Curso</h1>
-    <p class="subtitle">Preencha seus dados para se inscrever</p>
+      <h1>Matrícula em Curso</h1>
+      <p class="subtitle">Preencha seus dados para se inscrever</p>
 
-    <form @submit.prevent="enviarFormulario" class="form">
+      <form @submit.prevent="enviarFormulario" class="form">
 
-      <div class="form-group">
-        <label for="nome">Nome completo</label>
-        <input
-          id="nome"
-          type="text"
-          v-model="nome"
-          placeholder="Digite seu nome completo"
-          required
-        />
-      </div>
+        <div class="form-group">
+          <label for="nome">Nome completo</label>
+          <input id="nome"  type="text" v-model="nome" placeholder="Digite seu nome completo" required/>
+        </div>
 
-      <div class="form-group">
-        <label for="email">E-mail</label>
-        <input
-          id="email"
-          type="email"
-          v-model="email"
-          placeholder="exemplo@email.com"
-          required
-        />
-      </div>
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input id="email" type="email" v-model="email" placeholder="exemplo@email.com" required/>
+        </div>
 
-      <div class="form-group">
-        <label for="curso">Curso</label>
-        <select id="curso" v-model="curso" required>
-          <option disabled value="">Selecione um curso</option>
-          <option v-for="curso in cursos" :key="curso.id" :value="curso.nome"> {{curso.nome}} </option>
+        <div class="form-group">
+          <label for="curso">Curso</label>
+          <select id="curso" v-model="curso" required>
+            <option disabled value="">Selecione um curso</option>
+            <option v-for="curso in cursos" :key="curso.id" :value="curso.nome"> {{curso.nome}} </option>
+          </select>
+        </div>
 
-        </select>
-      </div>
+        <button type="submit" class="btn-submit">
+          Realizar Matrícula
+        </button>
 
-      <button type="submit" class="btn-submit">
-        Realizar Matrícula
-      </button>
-
-      <MessageForm v-if="mensagem" :msg="mensagem" />
-
-    </form>
-
-  </div>
-
-</section>
- 
+        <MessageForm v-if="mensagem" :msg="mensagem" />
+      </form>
+    </div>
+  </section>
 </template>
 
 <script>
@@ -72,48 +55,91 @@ export default {
     }
   },
   mounted() {
-  this.buscarCursos()
+    this.buscarCursos()
+
+    setInterval(() => {
+      this.buscarCursos()
+    }, 1000)
   },
 
  methods: {
 
-  async buscarCursos() {
-    try {
+    async buscarCursos() {
+      try {
 
-      const response = await fetch("http://localhost:3000/cursos")
+        const response = await fetch("http://localhost:3000/cursos")
 
-      const data = await response.json()
+        const data = await response.json()
 
-      this.cursos = data
+        this.cursos = data
 
-    } catch (error) {
-      console.error("Erro ao buscar cursos", error)
-    }
-  },
+      } catch (error) {
+        console.error("Erro ao buscar cursos", error)
+      }
+    },
 
-    enviarFormulario() {
+    // -----------------------------------------------------------------
+
+    async enviarFormulario() {
 
       if (!this.nome || !this.email || !this.curso) {
         this.mensagem = "Preencha todos os campos."
         return
       }
 
-      this.mensagem = "Matrícula enviada com sucesso!"
+      const nomeRegex = /^[A-Za-zÀ-ÿ\s]+$/
 
-      console.log({
-        nome: this.nome,
-        email: this.email,
-        curso: this.curso
-      })
+      if (!nomeRegex.test(this.nome)) {
+        this.mensagem = "O nome deve conter apenas letras."
+        return
+      }
 
-      this.nome = ""
-      this.email = ""
-      this.curso = ""
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-    setTimeout(() => {
+      if (!emailRegex.test(this.email)) {
+        this.mensagem = "Digite um email válido."
+        return
+      }
+
+      try {
+
+        const response = await fetch("http://localhost:3000/matricula", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            nome: this.nome,
+            email: this.email,
+            curso: this.curso
+          })
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          this.mensagem = data.mensagem
+          return
+        }
+
+        this.mensagem = "Matrícula realizada com sucesso!"
+
+        this.nome = ""
+        this.email = ""
+        this.curso = ""
+
+      } catch (error) {
+
+        this.mensagem = "Erro ao conectar com o servidor"
+
+      }
+
+      setTimeout(() => {
         this.mensagem = ""
       }, 4000)
+
     }
+
   }
 }
 </script>

@@ -1,0 +1,250 @@
+<template>
+  <div class="tabela-container">
+
+    <h2 class="titulo">Alunos Matriculados</h2>
+
+    <div class="tabela-wrapper">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Aluno</th>
+            <th>Email</th>
+            <th>Curso</th>
+            <th class="acoes">Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr v-for="matricula in matriculas" :key="matricula.id">
+            <td>{{ matricula.id }}</td>
+            <td>{{ matricula.nome }}</td>
+            <td>{{ matricula.email }}</td>
+            <td>{{ matricula.curso }}</td>
+
+            <td class="acoes">
+                <button class="btn-editar" @click="$emit('editar', matricula)"> Editar </button>
+
+                <button class="btn-excluir" @click="excluirMatricula(matricula.id)"> Excluir </button>
+
+                </td>
+          </tr>
+
+          <tr v-if="matriculas.length === 0">
+            <td colspan="5" class="vazio">
+              Nenhuma matrícula encontrada
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</template>
+
+<script>
+export default {
+  name: "TabelaMatriculas",
+
+  data() {
+    return {
+      matriculas: [
+        {
+          id: 1,
+          nome: "João Silva",
+          email: "joao@email.com",
+          curso: "Desenvolvimento Web"
+        },
+        {
+          id: 2,
+          nome: "Maria Souza",
+          email: "maria@email.com",
+          curso: "Banco de Dados"
+        }
+      ]
+    }
+  },
+
+  methods: {
+    excluirMatricula(id) {
+      this.matriculas = this.matriculas.filter(m => m.id !== id)
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+.tabela-container{
+  width:100%;
+  padding:40px 30px;
+  box-sizing:border-box;
+  background:#f7f9fc;
+}
+
+.titulo{
+  font-size:26px;
+  font-weight:600;
+  color:#1f2937;
+  margin-bottom:25px;
+}
+
+.tabela-wrapper{
+  width:100%;
+  overflow-x:auto;
+}
+
+.tabela{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background:#ffffff;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 8px 25px rgba(0,0,0,0.06);
+  min-width:600px;
+}
+
+/* HEADER */
+
+.tabela thead{
+  background:linear-gradient(135deg,#4f46e5,#6366f1);
+  color:white;
+}
+
+.tabela th{
+  padding:16px;
+  text-align:left;
+  font-weight:600;
+  font-size:14px;
+  letter-spacing:0.4px;
+}
+
+/* BODY */
+
+.tabela td{
+  padding:16px;
+  font-size:14px;
+  color:#374151;
+  border-bottom:1px solid #f1f1f1;
+}
+
+.tabela tbody tr{
+  transition:all 0.2s ease;
+}
+
+.tabela tbody tr:hover{
+  background:#f5f7ff;
+  transform:scale(1.002);
+}
+
+/* COLUNA AÇÕES */
+
+.acoes{
+  text-align:center;
+}
+
+/* BOTÃO EXCLUIR */
+
+.acoes{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+/* BOTÃO EDITAR */
+
+.btn-editar{
+  background:#3b82f6;
+  border:none;
+  color:white;
+  padding:8px 16px;
+  border-radius:6px;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+
+.btn-editar:hover{
+  background:#2563eb;
+  transform:translateY(-1px);
+  box-shadow:0 4px 10px rgba(37,99,235,0.3);
+}
+
+.btn-editar:active{
+  transform:scale(0.96);
+}
+
+/* BOTÃO EXCLUIR (mantém o que já tinha) */
+
+.btn-excluir{
+  background:#ef4444;
+  border:none;
+  color:white;
+  padding:8px 16px;
+  border-radius:6px;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+
+.btn-excluir:hover{
+  background:#dc2626;
+  transform:translateY(-1px);
+  box-shadow:0 4px 10px rgba(220,38,38,0.3);
+}
+
+.btn-excluir:active{
+  transform:scale(0.96);
+}
+
+/* LINHA SEM DADOS */
+
+.vazio{
+  text-align:center;
+  padding:25px;
+  color:#9ca3af;
+  font-style:italic;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width:900px){
+
+  .tabela-container{
+    padding:25px 15px;
+  }
+
+  .titulo{
+    font-size:22px;
+  }
+
+  .tabela th,
+  .tabela td{
+    padding:14px;
+    font-size:13px;
+  }
+
+}
+
+@media (max-width:600px){
+
+  .tabela{
+    min-width:520px;
+  }
+
+}
+
+@media (max-width:450px){
+
+  .titulo{
+    font-size:20px;
+  }
+
+}
+
+</style>

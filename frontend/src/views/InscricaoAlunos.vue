@@ -1,14 +1,16 @@
 <template>
   <div class="main-container">
-    <h1>oiklaskdosakdas</h1>
+    <TabelaMatriculasVue />
   </div>
 </template>
 
 <script>
+import TabelaMatriculasVue from '../components/TabelaMatriculas.vue'
 
   export default{
     name: "InscricaoAlunos",
     components:{
+      TabelaMatriculasVue
     }
   }
 </script>
