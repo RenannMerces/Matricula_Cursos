@@ -4,24 +4,34 @@ import path from "path"
 import { Matricula } from "../models/Matricula"
 
 const router = Router()
-
-// caminho do arquivo JSON
 const filePath = path.join(__dirname, "../database/matriculas.json")
+
+// ----------------------------------- POST ------------------------------------
 
 router.post("/", (req: Request, res: Response) => {
 
-  console.log("BODY RECEBIDO:", req.body)
+  console.log("Testando Body:", req.body)
 
   const { nome, email, curso }: Matricula = req.body
 
-  // validação de campos obrigatórios
+    if (nome.length > 50) {
+    return res.status(400).json({
+      mensagem: "O nome deve ter no máximo 100 caracteres"
+    })
+  }
+
+  if (email.length > 50) {
+    return res.status(400).json({
+      mensagem: "O email deve ter no máximo 150 caracteres"
+    })
+  }
+
   if (!nome || !email || !curso) {
     return res.status(400).json({
       mensagem: "Todos os campos são obrigatórios"
     })
   }
 
-  // regex para nome (apenas letras e espaço)
   const nomeRegex = /^[A-Za-zÀ-ÿ\s]+$/
 
   if (!nomeRegex.test(nome)) {
@@ -60,8 +70,6 @@ router.post("/", (req: Request, res: Response) => {
 
     // adiciona nova matrícula
     matriculas.push(novaMatricula)
-
-    // salva no JSON
     fs.writeFileSync(filePath, JSON.stringify(matriculas, null, 2))
 
     return res.status(201).json({
@@ -74,6 +82,58 @@ router.post("/", (req: Request, res: Response) => {
     return res.status(500).json({
       mensagem: "Erro ao salvar matrícula"
     })
+  }
+
+})
+
+// ----------------------------------- GET ------------------------------------
+
+router.get("/", (req: Request, res: Response) => {
+
+  try {
+
+    const data = fs.readFileSync(filePath, "utf-8")
+    const matriculas = data ? JSON.parse(data) : []
+
+    return res.status(200).json(matriculas)
+
+  } catch (error) {
+
+    console.error(error)
+
+    return res.status(500).json({
+      mensagem: "Erro ao buscar matrículas"
+    })
+
+  }
+
+})
+
+// ----------------------------------- DELETE ------------------------------------
+
+router.delete("/:id", (req: Request, res: Response) => {
+
+  const id = Number(req.params.id)
+
+  try {
+
+    const data = fs.readFileSync(filePath, "utf-8")
+    const matriculas = JSON.parse(data)
+
+    const novasMatriculas = matriculas.filter((m: any) => m.id !== id)
+
+    fs.writeFileSync(filePath, JSON.stringify(novasMatriculas, null, 2))
+
+    return res.status(200).json({
+      mensagem: "Matrícula removida com sucesso"
+    })
+
+  } catch (error) {
+
+    return res.status(500).json({
+      mensagem: "Erro ao excluir matrícula"
+    })
+
   }
 
 })

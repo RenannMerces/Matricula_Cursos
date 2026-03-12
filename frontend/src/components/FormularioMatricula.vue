@@ -9,12 +9,12 @@
 
         <div class="form-group">
           <label for="nome">Nome completo</label>
-          <input id="nome"  type="text" v-model="nome" placeholder="Digite seu nome completo" required/>
+          <input id="nome"  type="text" v-model="nome" placeholder="Digite seu nome completo" maxlength="50" required/>
         </div>
 
         <div class="form-group">
           <label for="email">E-mail</label>
-          <input id="email" type="email" v-model="email" placeholder="exemplo@email.com" required/>
+          <input id="email" type="email" v-model="email" placeholder="exemplo@email.com" maxlength="50" required/>
         </div>
 
         <div class="form-group">
@@ -82,6 +82,7 @@ export default {
 
     async enviarFormulario() {
 
+
       if (!this.nome || !this.email || !this.curso) {
         this.mensagem = "Preencha todos os campos."
         return
@@ -94,7 +95,7 @@ export default {
         return
       }
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
       if (!emailRegex.test(this.email)) {
         this.mensagem = "Digite um email válido."

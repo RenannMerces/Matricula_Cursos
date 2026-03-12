@@ -23,11 +23,8 @@
             <td>{{ matricula.curso }}</td>
 
             <td class="acoes">
-                <button class="btn-editar" @click="$emit('editar', matricula)"> Editar </button>
-
                 <button class="btn-excluir" @click="excluirMatricula(matricula.id)"> Excluir </button>
-
-                </td>
+            </td>
           </tr>
 
           <tr v-if="matriculas.length === 0">
@@ -49,28 +46,39 @@ export default {
 
   data() {
     return {
-      matriculas: [
-        {
-          id: 1,
-          nome: "João Silva",
-          email: "joao@email.com",
-          curso: "Desenvolvimento Web"
-        },
-        {
-          id: 2,
-          nome: "Maria Souza",
-          email: "maria@email.com",
-          curso: "Banco de Dados"
-        }
-      ]
+      matriculas: []
     }
   },
 
   methods: {
-    excluirMatricula(id) {
-      this.matriculas = this.matriculas.filter(m => m.id !== id)
-    }
-  }
+      async buscarMatriculas() {
+
+        try {
+          const response = await fetch("http://localhost:3000/matricula")
+          const data = await response.json()
+          this.matriculas = data
+
+        } catch (error) {
+          console.error("Erro ao buscar matrículas", error)
+        }
+
+      },
+
+      async excluirMatricula(id) {
+          try {
+            await fetch(`http://localhost:3000/matricula/${id}`, {
+              method: "DELETE"
+            })
+            this.buscarMatriculas()
+
+          } catch (error) {
+            console.error("Erro ao excluir matrícula", error)
+          }
+        }
+  },
+  mounted() {
+  this.buscarMatriculas()
+}
 }
 </script>
 
@@ -106,7 +114,7 @@ export default {
   min-width:600px;
 }
 
-/* HEADER */
+/* ------------------------- HEADER ----------------------- */
 
 .tabela thead{
   background:linear-gradient(135deg,#4f46e5,#6366f1);
@@ -121,8 +129,7 @@ export default {
   letter-spacing:0.4px;
 }
 
-/* BODY */
-
+/* ----------------------- BODY ----------------------- */
 .tabela td{
   padding:16px;
   font-size:14px;
@@ -139,13 +146,9 @@ export default {
   transform:scale(1.002);
 }
 
-/* COLUNA AÇÕES */
-
 .acoes{
   text-align:center;
 }
-
-/* BOTÃO EXCLUIR */
 
 .acoes{
   display:flex;
@@ -153,32 +156,6 @@ export default {
   gap:10px;
   flex-wrap:wrap;
 }
-
-/* BOTÃO EDITAR */
-
-.btn-editar{
-  background:#3b82f6;
-  border:none;
-  color:white;
-  padding:8px 16px;
-  border-radius:6px;
-  font-size:13px;
-  font-weight:500;
-  cursor:pointer;
-  transition:all 0.2s ease;
-}
-
-.btn-editar:hover{
-  background:#2563eb;
-  transform:translateY(-1px);
-  box-shadow:0 4px 10px rgba(37,99,235,0.3);
-}
-
-.btn-editar:active{
-  transform:scale(0.96);
-}
-
-/* BOTÃO EXCLUIR (mantém o que já tinha) */
 
 .btn-excluir{
   background:#ef4444;
@@ -202,8 +179,6 @@ export default {
   transform:scale(0.96);
 }
 
-/* LINHA SEM DADOS */
-
 .vazio{
   text-align:center;
   padding:25px;
@@ -211,40 +186,32 @@ export default {
   font-style:italic;
 }
 
-/* RESPONSIVIDADE */
+/* ------------------------ RESPONSIVIDADE ---------------------- */
 
 @media (max-width:900px){
-
   .tabela-container{
     padding:25px 15px;
   }
-
   .titulo{
     font-size:22px;
   }
-
   .tabela th,
   .tabela td{
     padding:14px;
     font-size:13px;
   }
-
 }
 
 @media (max-width:600px){
-
   .tabela{
     min-width:520px;
   }
-
 }
 
 @media (max-width:450px){
-
   .titulo{
     font-size:20px;
   }
-
 }
 
 </style>
