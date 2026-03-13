@@ -97,7 +97,7 @@ matricula-cursos
 ## 1️⃣ Clonar o repositório
 
 ```
-git clone <url-do-repositorio>
+git clone https://github.com/RenannMerces/Matricula_Cursos.git
 ```
 
 Entre na pasta do projeto:
